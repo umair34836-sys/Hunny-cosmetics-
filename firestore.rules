@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isActiveUser() {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && userDoc().data.active == true;
+    }
+
+    function isAdmin() {
+      return isActiveUser() && userDoc().data.role == 'admin';
+    }
+
+    // One-time flag: whether the shop's first (owner) admin account has
+    // been created yet. Lets the app show a "create owner account" screen
+    // exactly once, instead of an open sign-up form.
+    match /meta/bootstrap {
+      allow read: if true;
+      allow create: if isSignedIn() && !exists(/databases/$(database)/documents/meta/bootstrap);
+      allow update, delete: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isActiveUser());
+      allow create: if isSignedIn() && (
+        (isAdmin() && request.resource.data.role in ['admin', 'cashier']) ||
+        (request.auth.uid == userId && request.resource.data.role == 'admin'
+          && !exists(/databases/$(database)/documents/meta/bootstrap))
+      );
+      // Admin can edit any user (role/active). A user may only ever touch
+      // their own name — never their own role/active flag.
+      allow update: if isAdmin() ||
+        (isSignedIn() && request.auth.uid == userId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']));
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if isActiveUser();
+      allow create, delete: if isAdmin();
+      // Admin can change anything. A cashier may only decrement/increment
+      // `quantity` (needed by POS checkout and refunds) — never price,
+      // name, or other fields.
+      allow update: if isAdmin() ||
+        (isActiveUser() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'updatedAt']));
+    }
+
+    match /stockMovements/{movementId} {
+      allow read: if isActiveUser();
+      // Immutable audit log: admin logs stock-in/adjustments; any active
+      // user may log a sale/return entry (written alongside a checkout or
+      // refund transaction).
+      allow create: if isAdmin() ||
+        (isActiveUser() && request.resource.data.type in ['sale', 'return']);
+      allow update, delete: if false;
+    }
+
+    match /sales/{saleId} {
+      allow read: if isActiveUser();
+      allow create: if isActiveUser() && request.resource.data.cashierId == request.auth.uid;
+      // Only admin can refund/void a sale.
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    match /counters/{counterId} {
+      allow read: if isActiveUser();
+      allow write: if isActiveUser();
+    }
+
+    match /settings/{docId} {
+      allow read: if isActiveUser();
+      allow write: if isAdmin();
+    }
+  }
+}
