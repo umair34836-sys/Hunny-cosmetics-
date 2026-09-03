@@ -35,11 +35,17 @@ export function listenStockMovements(onData, onError, max = 200) {
 }
 
 export async function createProduct(data) {
+  const costPrice = Number(data.costPrice) || 0
+  // Selling price isn't set when a product is listed — the actual sale
+  // price is whatever the cashier enters at billing time (POS). We still
+  // store a starting reference value (defaults to cost) so bulk-import
+  // CSVs can optionally override it, and reports have a fallback number.
+  const sellingPrice = data.sellingPrice !== '' && data.sellingPrice != null ? Number(data.sellingPrice) || costPrice : costPrice
   return addDoc(productsCol, {
     ...data,
     quantity: Number(data.quantity) || 0,
-    costPrice: Number(data.costPrice) || 0,
-    sellingPrice: Number(data.sellingPrice) || 0,
+    costPrice,
+    sellingPrice,
     lowStockThreshold: Number(data.lowStockThreshold) || 5,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),

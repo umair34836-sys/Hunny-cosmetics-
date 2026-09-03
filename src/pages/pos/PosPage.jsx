@@ -53,6 +53,7 @@ export default function PosPage() {
   const taxAmount = (taxable * taxPercent) / 100
   const total = Math.round((taxable + taxAmount) * 100) / 100
   const changeDue = paymentMethod === 'cash' && amountPaid !== '' ? Math.max(0, Number(amountPaid) - total) : 0
+  const hasUnpricedItems = cart.some((item) => !item.price || item.price <= 0)
 
   function addToCart(product) {
     setCart((prev) => {
@@ -71,7 +72,10 @@ export default function PosPage() {
           name: product.name,
           sku: product.sku || '',
           unit: product.unit || '',
-          price: product.sellingPrice,
+          // Price starts empty — the cashier types the amount the customer
+          // actually pays at billing time; it's never prefilled from a
+          // stored price (which, for most products, is just the cost).
+          price: 0,
           costPrice: product.costPrice || 0,
           qty: 1,
           maxQty: product.quantity,
@@ -117,6 +121,10 @@ export default function PosPage() {
 
   async function handleCheckout() {
     if (!cart.length) return
+    if (hasUnpricedItems) {
+      toast.error(t('pos.setAllPrices'))
+      return
+    }
     setSubmitting(true)
     try {
       const meta = {
@@ -191,8 +199,7 @@ export default function PosPage() {
             >
               <span className="line-clamp-2 text-sm font-medium text-ink">{p.name}</span>
               <span className="text-xs text-ink-soft">{p.brand}</span>
-              <span className="mt-1 text-sm font-semibold text-brand-700">{formatMoney(p.sellingPrice, settings.currencySymbol)}</span>
-              <span className="text-xs text-ink-soft">{p.quantity} {p.unit} {t('products.inStock').toLowerCase()}</span>
+              <span className="mt-1 text-xs text-ink-soft">{p.quantity} {p.unit} {t('products.inStock').toLowerCase()}</span>
             </button>
           ))}
           {filteredProducts.length === 0 && (
@@ -229,8 +236,10 @@ export default function PosPage() {
                       type="number"
                       min="0"
                       step="0.01"
-                      value={item.price}
+                      placeholder="0"
+                      value={item.price || ''}
                       onChange={(e) => changePrice(item.productId, e.target.value)}
+                      invalid={!item.price || item.price <= 0}
                       className="!min-h-0 w-20 !px-2 !py-1.5 text-sm"
                       title={t('pos.unitPrice')}
                     />
@@ -307,7 +316,10 @@ export default function PosPage() {
             )}
           </div>
 
-          <Button className="w-full" size="lg" disabled={!cart.length || submitting} onClick={handleCheckout}>
+          {cart.length > 0 && hasUnpricedItems && (
+            <p className="text-xs text-danger">{t('pos.setAllPrices')}</p>
+          )}
+          <Button className="w-full" size="lg" disabled={!cart.length || hasUnpricedItems || submitting} onClick={handleCheckout}>
             {submitting ? t('pos.processing') : t('pos.checkout')}
           </Button>
         </div>

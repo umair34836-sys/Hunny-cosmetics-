@@ -10,9 +10,9 @@ import { parseProductsCSV } from '../../lib/csv'
 import { createProduct, updateProductPricingByName } from '../../lib/products'
 import { formatMoney } from '../../lib/format'
 
-const PLACEHOLDER_CREATE = `name,category,brand,sku,unit,costPrice,sellingPrice,quantity,lowStockThreshold,expiryDate,supplier
-Matte Lipstick,Lips,,,pcs,70,98,1,1,,
-Facewash Cleanser,Skincare,,,pcs,100,140,1,1,,`
+const PLACEHOLDER_CREATE = `name,category,brand,sku,unit,costPrice,quantity,lowStockThreshold,expiryDate,supplier
+Matte Lipstick,Lips,,,pcs,70,1,1,,
+Facewash Cleanser,Skincare,,,pcs,100,1,1,,`
 
 const PLACEHOLDER_UPDATE = `name,costPrice,sellingPrice
 Matte Lipstick,70,98
@@ -170,7 +170,7 @@ export default function BulkImportModal({ open, onClose }) {
                         <th className="px-3 py-2 text-start">{t('common.name')}</th>
                         {mode === 'create' && <th className="px-3 py-2 text-start">{t('common.category')}</th>}
                         <th className="px-3 py-2 text-start">{t('products.costPrice')}</th>
-                        <th className="px-3 py-2 text-start">{t('products.sellingPrice')}</th>
+                        {mode === 'updatePrices' && <th className="px-3 py-2 text-start">{t('products.sellingPrice')}</th>}
                         {mode === 'create' && <th className="px-3 py-2 text-start">{t('common.quantity')}</th>}
                       </tr>
                     </thead>
@@ -180,7 +180,7 @@ export default function BulkImportModal({ open, onClose }) {
                           <td className="px-3 py-1.5 text-ink">{r.name}</td>
                           {mode === 'create' && <td className="px-3 py-1.5 text-ink-muted">{r.category || '—'}</td>}
                           <td className="px-3 py-1.5 text-ink-muted">{formatMoney(r.costPrice, settings.currencySymbol)}</td>
-                          <td className="px-3 py-1.5 text-ink-muted">{formatMoney(r.sellingPrice, settings.currencySymbol)}</td>
+                          {mode === 'updatePrices' && <td className="px-3 py-1.5 text-ink-muted">{formatMoney(r.sellingPrice, settings.currencySymbol)}</td>}
                           {mode === 'create' && <td className="px-3 py-1.5 text-ink-muted">{r.quantity} {r.unit}</td>}
                         </tr>
                       ))}

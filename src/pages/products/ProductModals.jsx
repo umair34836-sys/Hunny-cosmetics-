@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from '../../components/ui/Modal'
 import Button from '../../components/ui/Button'
 import { Field, Input, Textarea } from '../../components/ui/Field'
@@ -14,34 +14,42 @@ const emptyForm = {
   sku: '',
   unit: 'pcs',
   costPrice: '',
-  sellingPrice: '',
   quantity: '',
   lowStockThreshold: '5',
   expiryDate: '',
   supplier: '',
 }
 
+function mapProductToForm(p) {
+  return {
+    name: p.name || '',
+    category: p.category || '',
+    brand: p.brand || '',
+    sku: p.sku || '',
+    unit: p.unit || 'pcs',
+    costPrice: p.costPrice ?? '',
+    quantity: p.quantity ?? '',
+    lowStockThreshold: p.lowStockThreshold ?? '5',
+    expiryDate: p.expiryDate || '',
+    supplier: p.supplier || '',
+  }
+}
+
 export function ProductFormModal({ open, onClose, product }) {
   const { t } = useLanguage()
   const toast = useToast()
-  const [form, setForm] = useState(() => (product ? mapProductToForm(product) : emptyForm))
+  const [form, setForm] = useState(emptyForm)
   const [submitting, setSubmitting] = useState(false)
 
-  function mapProductToForm(p) {
-    return {
-      name: p.name || '',
-      category: p.category || '',
-      brand: p.brand || '',
-      sku: p.sku || '',
-      unit: p.unit || 'pcs',
-      costPrice: p.costPrice ?? '',
-      sellingPrice: p.sellingPrice ?? '',
-      quantity: p.quantity ?? '',
-      lowStockThreshold: p.lowStockThreshold ?? '5',
-      expiryDate: p.expiryDate || '',
-      supplier: p.supplier || '',
+  // The modal stays mounted between opens (only `open` toggles), so the
+  // form must be re-seeded every time it's opened — otherwise editing a
+  // second product (or opening "Add" after an edit) shows stale/empty
+  // fields instead of that product's actual values.
+  useEffect(() => {
+    if (open) {
+      setForm(product ? mapProductToForm(product) : emptyForm)
     }
-  }
+  }, [open, product])
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -85,9 +93,6 @@ export function ProductFormModal({ open, onClose, product }) {
           <Field label={t('products.costPrice')} required>
             <Input type="number" min="0" step="0.01" required value={form.costPrice} onChange={(e) => update('costPrice', e.target.value)} />
           </Field>
-          <Field label={t('products.sellingPrice')} required>
-            <Input type="number" min="0" step="0.01" required value={form.sellingPrice} onChange={(e) => update('sellingPrice', e.target.value)} />
-          </Field>
           <Field label={product ? t('products.currentStock') : t('common.quantity')} required>
             <Input type="number" min="0" required disabled={!!product} value={form.quantity} onChange={(e) => update('quantity', e.target.value)} />
           </Field>
@@ -104,6 +109,7 @@ export function ProductFormModal({ open, onClose, product }) {
             <Input id="supplier" value={form.supplier} onChange={(e) => update('supplier', e.target.value)} />
           </Field>
         </div>
+        <p className="text-xs text-ink-soft">{t('products.sellingPriceNote')}</p>
         {product && (
           <p className="text-xs text-ink-soft">{t('products.stockIn')} / {t('products.adjust')} — use the dedicated buttons on the product row to change stock levels.</p>
         )}

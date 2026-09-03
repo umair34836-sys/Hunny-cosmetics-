@@ -114,10 +114,14 @@ export const translations = {
   'products.adjustReasonPlaceholder': { en: 'e.g. damaged, expired, correction…', ur: 'مثلاً خراب، میعاد ختم، درستگی…' },
   'products.history': { en: 'Stock History', ur: 'اسٹاک کی تاریخ' },
   'products.unitPlaceholder': { en: 'pcs, box, bottle…', ur: 'عدد، ڈبہ، بوتل…' },
+  'products.sellingPriceNote': {
+    en: "No selling price to set here — the price is entered at billing time (New Sale), so it always matches what the customer actually paid.",
+    ur: 'یہاں فروخت قیمت درج کرنے کی ضرورت نہیں — قیمت بلنگ کے وقت (نئی سیل) درج ہوتی ہے، تاکہ ہمیشہ وہی ہو جو گاہک نے ادا کیا۔',
+  },
   'products.bulkImport': { en: 'Bulk Import', ur: 'یکبار میں کئی پروڈکٹس شامل کریں' },
   'products.bulkImportHelp': {
-    en: 'Paste or upload a CSV to add many products at once — handy after a supplier order. Columns: name, category, brand, sku, unit, costPrice, sellingPrice, quantity, lowStockThreshold, expiryDate, supplier. Only "name" is required.',
-    ur: 'ایک ساتھ کئی پروڈکٹس شامل کرنے کے لیے CSV پیسٹ کریں یا اپلوڈ کریں — سپلائر آرڈر کے بعد مفید۔ کالمز: name, category, brand, sku, unit, costPrice, sellingPrice, quantity, lowStockThreshold, expiryDate, supplier۔ صرف "name" لازمی ہے۔',
+    en: 'Paste or upload a CSV to add many products at once — handy after a supplier order. Columns: name, category, brand, sku, unit, costPrice, quantity, lowStockThreshold, expiryDate, supplier. Only "name" is required — no selling price here, it\'s entered at billing time.',
+    ur: 'ایک ساتھ کئی پروڈکٹس شامل کرنے کے لیے CSV پیسٹ کریں یا اپلوڈ کریں — سپلائر آرڈر کے بعد مفید۔ کالمز: name, category, brand, sku, unit, costPrice, quantity, lowStockThreshold, expiryDate, supplier۔ صرف "name" لازمی ہے — فروخت قیمت یہاں نہیں، وہ بلنگ کے وقت درج ہوتی ہے۔',
   },
   'products.uploadCsv': { en: 'Upload CSV file', ur: 'CSV فائل اپلوڈ کریں' },
   'products.orPasteBelow': { en: 'or paste rows below', ur: 'یا نیچے پیسٹ کریں' },
@@ -159,6 +163,7 @@ export const translations = {
   'pos.discountPercent': { en: 'Discount %', ur: 'رعایت %' },
   'pos.discountAmount': { en: 'Discount Amount', ur: 'رعایت رقم' },
   'pos.unitPrice': { en: 'Sale price (editable)', ur: 'فروخت قیمت (قابلِ ترمیم)' },
+  'pos.setAllPrices': { en: 'Enter the price for every item before completing the sale', ur: 'سیل مکمل کرنے سے پہلے ہر شے کی قیمت درج کریں' },
   'pos.printNormal': { en: 'Print Receipt (A5)', ur: 'رسید پرنٹ کریں (A5)' },
   'pos.printThermal': { en: 'Print Receipt (Thermal)', ur: 'رسید پرنٹ کریں (تھرمل)' },
 

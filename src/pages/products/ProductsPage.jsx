@@ -117,7 +117,6 @@ export default function ProductsPage() {
                   <th className="px-4 py-3 text-start font-medium">{t('common.name')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('common.category')}</th>
                   {isAdmin && <th className="px-4 py-3 text-start font-medium">{t('products.costPrice')}</th>}
-                  <th className="px-4 py-3 text-start font-medium">{t('products.sellingPrice')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('common.quantity')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('common.status')}</th>
                   {isAdmin && <th className="px-4 py-3 text-end font-medium">{t('common.actions')}</th>}
@@ -133,7 +132,6 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-4 py-3 text-ink-muted">{p.category || '—'}</td>
                     {isAdmin && <td className="px-4 py-3 text-ink-muted">{formatMoney(p.costPrice, settings.currencySymbol)}</td>}
-                    <td className="px-4 py-3 text-ink">{formatMoney(p.sellingPrice, settings.currencySymbol)}</td>
                     <td className="px-4 py-3 text-ink">{p.quantity} {p.unit}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1.5">
