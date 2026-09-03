@@ -9,6 +9,11 @@ import {
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
+/** Profit for one sale: sum of (sellingPrice - costPrice) x qty per line item. */
+export function computeSaleProfit(sale) {
+  return (sale.items || []).reduce((sum, item) => sum + (item.price - (item.costPrice || 0)) * item.qty, 0)
+}
+
 export function listenSales(onData, onError) {
   const q = query(collection(db, 'sales'), orderBy('createdAt', 'desc'))
   return onSnapshot(

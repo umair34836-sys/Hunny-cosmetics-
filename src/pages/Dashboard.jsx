@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Wallet, Receipt, Package, AlertTriangle, Clock } from 'lucide-react'
+import { Wallet, Receipt, Package, AlertTriangle, Clock, TrendingUp } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useSettings } from '../contexts/SettingsContext'
 import { listenProducts } from '../lib/products'
-import { listenSales } from '../lib/sales'
+import { listenSales, computeSaleProfit } from '../lib/sales'
 import { formatMoney, formatDateTime, daysUntil } from '../lib/format'
 import Card, { CardHeader } from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
@@ -64,7 +64,8 @@ export default function Dashboard() {
       const d = daysUntil(p.expiryDate)
       return d !== null && d <= 30
     })
-    return { todayTotal, todayCount: todaySales.length, inventoryValue, lowStock, outOfStock, expiring }
+    const totalNetProfit = sales.filter((s) => s.status !== 'refunded').reduce((sum, s) => sum + computeSaleProfit(s), 0)
+    return { todayTotal, todayCount: todaySales.length, inventoryValue, lowStock, outOfStock, expiring, totalNetProfit }
   }, [products, sales])
 
   if (!stats) return <FullPageSpinner />
@@ -76,9 +77,10 @@ export default function Dashboard() {
         <p className="text-sm text-ink-muted">{t('dash.welcome')}, {profile?.name}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard icon={Wallet} label={t('dash.todaySales')} value={formatMoney(stats.todayTotal, settings.currencySymbol)} tone="brand" />
         <StatCard icon={Receipt} label={t('dash.todayOrders')} value={stats.todayCount} tone="success" />
+        {isAdmin && <StatCard icon={TrendingUp} label={t('dash.netProfit')} value={formatMoney(stats.totalNetProfit, settings.currencySymbol)} tone="success" />}
         {isAdmin && <StatCard icon={Package} label={t('dash.inventoryValue')} value={formatMoney(stats.inventoryValue, settings.currencySymbol)} tone="neutral" />}
         <StatCard icon={AlertTriangle} label={t('dash.lowStockCount')} value={stats.lowStock.length + stats.outOfStock.length} tone="warning" />
       </div>

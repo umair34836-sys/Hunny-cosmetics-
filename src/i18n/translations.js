@@ -77,6 +77,7 @@ export const translations = {
   'dash.todaySales': { en: "Today's Sales", ur: 'آج کی سیل' },
   'dash.todayOrders': { en: "Today's Bills", ur: 'آج کے بل' },
   'dash.inventoryValue': { en: 'Inventory Value', ur: 'انوینٹری کی مالیت' },
+  'dash.netProfit': { en: 'Total Net Profit', ur: 'کل خالص منافع' },
   'dash.lowStockCount': { en: 'Low Stock Items', ur: 'کم اسٹاک اشیاء' },
   'dash.recentSales': { en: 'Recent Sales', ur: 'حالیہ سیلز' },
   'dash.lowStockAlert': { en: 'Low Stock Alert', ur: 'کم اسٹاک وارننگ' },
@@ -167,6 +168,7 @@ export const translations = {
   'sales.confirmRefund': { en: 'Refund this sale? Stock will be restored.', ur: 'اس سیل کی واپسی کریں؟ اسٹاک واپس ہو جائے گا۔' },
   'sales.noSales': { en: 'No sales recorded yet.', ur: 'ابھی تک کوئی سیل ریکارڈ نہیں ہوئی۔' },
   'sales.saleDetail': { en: 'Sale Detail', ur: 'سیل کی تفصیل' },
+  'sales.costBreakdown': { en: 'Cost & Profit (admin only)', ur: 'لاگت اور منافع (صرف ایڈمن)' },
 
   // ---- Reports ----
   'reports.title': { en: 'Reports', ur: 'رپورٹس' },

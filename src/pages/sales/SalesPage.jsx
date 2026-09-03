@@ -4,7 +4,7 @@ import { useLanguage } from '../../i18n/LanguageContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useSettings } from '../../contexts/SettingsContext'
 import { useToast } from '../../contexts/ToastContext'
-import { listenSales, refundSale } from '../../lib/sales'
+import { listenSales, refundSale, computeSaleProfit } from '../../lib/sales'
 import { formatMoney, formatDateTime } from '../../lib/format'
 import Card from '../../components/ui/Card'
 import Badge from '../../components/ui/Badge'
@@ -84,6 +84,7 @@ export default function SalesPage() {
                   <th className="px-4 py-3 text-start font-medium">{t('sales.cashier')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('sales.items')}</th>
                   <th className="px-4 py-3 text-start font-medium">{t('common.total')}</th>
+                  {isAdmin && <th className="px-4 py-3 text-start font-medium">{t('reports.profit')}</th>}
                   <th className="px-4 py-3 text-start font-medium">{t('common.status')}</th>
                   <th className="px-4 py-3 text-end font-medium">{t('common.actions')}</th>
                 </tr>
@@ -99,6 +100,11 @@ export default function SalesPage() {
                     <td className="px-4 py-3 text-ink-muted">{s.cashierName}</td>
                     <td className="px-4 py-3 text-ink-muted">{s.items?.length}</td>
                     <td className="px-4 py-3 font-medium text-ink">{formatMoney(s.total, settings.currencySymbol)}</td>
+                    {isAdmin && (
+                      <td className="px-4 py-3 font-medium text-success">
+                        {s.status === 'refunded' ? '—' : formatMoney(computeSaleProfit(s), settings.currencySymbol)}
+                      </td>
+                    )}
                     <td className="px-4 py-3">
                       <Badge tone={s.status === 'refunded' ? 'danger' : 'success'}>
                         {s.status === 'refunded' ? t('sales.refunded') : t('sales.completed')}
@@ -137,6 +143,45 @@ export default function SalesPage() {
         {activeSale && (
           <div className="space-y-4">
             <ReceiptView sale={activeSale} />
+            {isAdmin && (
+              <div className="no-print overflow-hidden rounded-xl border border-surface-border">
+                <p className="border-b border-surface-border bg-surface-muted/60 px-4 py-2.5 text-sm font-semibold text-ink">
+                  {t('sales.costBreakdown')}
+                </p>
+                <div className="overflow-x-auto scrollbar-thin">
+                  <table className="w-full text-start text-sm">
+                    <thead className="text-xs uppercase tracking-wide text-ink-soft">
+                      <tr>
+                        <th className="px-4 py-2 text-start font-medium">{t('receipt.item')}</th>
+                        <th className="px-4 py-2 text-center font-medium">{t('receipt.qty')}</th>
+                        <th className="px-4 py-2 text-end font-medium">{t('products.costPrice')}</th>
+                        <th className="px-4 py-2 text-end font-medium">{t('products.sellingPrice')}</th>
+                        <th className="px-4 py-2 text-end font-medium">{t('reports.profit')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activeSale.items.map((item, i) => (
+                        <tr key={i} className="border-t border-surface-border">
+                          <td className="px-4 py-2 text-ink">{item.name}</td>
+                          <td className="px-4 py-2 text-center text-ink-muted">{item.qty}</td>
+                          <td className="px-4 py-2 text-end text-ink-muted">{formatMoney(item.costPrice || 0, settings.currencySymbol)}</td>
+                          <td className="px-4 py-2 text-end text-ink-muted">{formatMoney(item.price, settings.currencySymbol)}</td>
+                          <td className="px-4 py-2 text-end font-medium text-success">
+                            {formatMoney((item.price - (item.costPrice || 0)) * item.qty, settings.currencySymbol)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="border-t border-surface-border font-semibold">
+                        <td className="px-4 py-2 text-ink" colSpan={4}>{t('reports.profit')}</td>
+                        <td className="px-4 py-2 text-end text-success">{formatMoney(computeSaleProfit(activeSale), settings.currencySymbol)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            )}
             {isAdmin && activeSale.status !== 'refunded' && (
               <div className="no-print flex justify-end border-t border-surface-border pt-4">
                 <Button variant="danger" onClick={() => handleRefund(activeSale)} disabled={refunding}>

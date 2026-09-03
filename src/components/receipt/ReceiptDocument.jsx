@@ -7,6 +7,9 @@ export default function ReceiptDocument({ sale, shop, format = 'normal' }) {
 
   const symbol = shop.currencySymbol || 'Rs'
   const isThermal = format === 'thermal'
+  const paymentLabels = { cash: t('pos.cash'), card: t('pos.card'), easypaisa: t('pos.easypaisa') }
+  const amountPaid = sale.amountPaid != null ? Number(sale.amountPaid) : null
+  const changeDue = amountPaid != null ? Math.max(0, amountPaid - sale.total) : 0
 
   return (
     <div
@@ -91,6 +94,24 @@ export default function ReceiptDocument({ sale, shop, format = 'normal' }) {
           <span>{t('pos.grandTotal')}</span>
           <span>{formatMoney(sale.total, symbol)}</span>
         </div>
+        {sale.paymentMethod && (
+          <div className="flex justify-between pt-1">
+            <span>{t('pos.paymentMethod')}</span>
+            <span>{paymentLabels[sale.paymentMethod] || sale.paymentMethod}</span>
+          </div>
+        )}
+        {amountPaid != null && (
+          <div className="flex justify-between">
+            <span>{t('pos.amountPaid')}</span>
+            <span>{formatMoney(amountPaid, symbol)}</span>
+          </div>
+        )}
+        {changeDue > 0 && (
+          <div className="flex justify-between font-medium">
+            <span>{t('pos.changeDue')}</span>
+            <span>{formatMoney(changeDue, symbol)}</span>
+          </div>
+        )}
       </div>
 
       <div className="my-3 border-t border-dashed border-ink-soft/40" />

@@ -141,6 +141,7 @@ export default function PosPage() {
         taxAmount,
         total,
         paymentMethod,
+        amountPaid: meta.amountPaid,
         customerName,
         customerPhone,
         cashierName: profile.name,
