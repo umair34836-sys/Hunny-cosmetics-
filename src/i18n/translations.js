@@ -44,6 +44,7 @@ export const translations = {
   'common.errorGeneric': { en: 'Something went wrong. Please try again.', ur: 'کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔' },
   'common.unit': { en: 'Unit', ur: 'یونٹ' },
   'common.piece': { en: 'pcs', ur: 'عدد' },
+  'common.line': { en: 'Line', ur: 'لائن' },
 
   // ---- Auth ----
   'auth.login': { en: 'Log in', ur: 'لاگ ان' },
@@ -112,6 +113,15 @@ export const translations = {
   'products.adjustReasonPlaceholder': { en: 'e.g. damaged, expired, correction…', ur: 'مثلاً خراب، میعاد ختم، درستگی…' },
   'products.history': { en: 'Stock History', ur: 'اسٹاک کی تاریخ' },
   'products.unitPlaceholder': { en: 'pcs, box, bottle…', ur: 'عدد، ڈبہ، بوتل…' },
+  'products.bulkImport': { en: 'Bulk Import', ur: 'یکبار میں کئی پروڈکٹس شامل کریں' },
+  'products.bulkImportHelp': {
+    en: 'Paste or upload a CSV to add many products at once — handy after a supplier order. Columns: name, category, brand, sku, unit, costPrice, sellingPrice, quantity, lowStockThreshold, expiryDate, supplier. Only "name" is required.',
+    ur: 'ایک ساتھ کئی پروڈکٹس شامل کرنے کے لیے CSV پیسٹ کریں یا اپلوڈ کریں — سپلائر آرڈر کے بعد مفید۔ کالمز: name, category, brand, sku, unit, costPrice, sellingPrice, quantity, lowStockThreshold, expiryDate, supplier۔ صرف "name" لازمی ہے۔',
+  },
+  'products.uploadCsv': { en: 'Upload CSV file', ur: 'CSV فائل اپلوڈ کریں' },
+  'products.orPasteBelow': { en: 'or paste rows below', ur: 'یا نیچے پیسٹ کریں' },
+  'products.readyToImport': { en: '{n} product(s) ready to import', ur: '{n} پروڈکٹس شامل کرنے کے لیے تیار' },
+  'products.importAll': { en: 'Import {n}', ur: '{n} شامل کریں' },
 
   // ---- POS ----
   'pos.title': { en: 'New Sale', ur: 'نئی سیل' },
@@ -140,6 +150,7 @@ export const translations = {
   'pos.insufficientStock': { en: 'Not enough stock for {name}', ur: '{name} کے لیے کافی اسٹاک نہیں' },
   'pos.discountPercent': { en: 'Discount %', ur: 'رعایت %' },
   'pos.discountAmount': { en: 'Discount Amount', ur: 'رعایت رقم' },
+  'pos.unitPrice': { en: 'Sale price (editable)', ur: 'فروخت قیمت (قابلِ ترمیم)' },
   'pos.printNormal': { en: 'Print Receipt (A5)', ur: 'رسید پرنٹ کریں (A5)' },
   'pos.printThermal': { en: 'Print Receipt (Thermal)', ur: 'رسید پرنٹ کریں (تھرمل)' },
 

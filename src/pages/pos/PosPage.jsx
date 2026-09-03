@@ -80,6 +80,11 @@ export default function PosPage() {
     })
   }
 
+  function changePrice(productId, value) {
+    const price = Math.max(0, Number(value) || 0)
+    setCart((prev) => prev.map((i) => (i.productId === productId ? { ...i, price } : i)))
+  }
+
   function changeQty(productId, delta) {
     setCart((prev) =>
       prev
@@ -209,23 +214,37 @@ export default function PosPage() {
             <p className="py-6 text-center text-sm text-ink-muted">{t('pos.emptyCart')}</p>
           ) : (
             cart.map((item) => (
-              <div key={item.productId} className="flex items-center gap-2 border-b border-surface-border py-2.5 last:border-0">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-ink">{item.name}</p>
-                  <p className="text-xs text-ink-soft">{formatMoney(item.price, settings.currencySymbol)} × {item.qty}</p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => changeQty(item.productId, -1)} className="rounded-md border border-surface-border p-1 text-ink-muted hover:bg-surface-muted cursor-pointer">
-                    <Minus size={14} />
-                  </button>
-                  <span className="w-6 text-center text-sm">{item.qty}</span>
-                  <button onClick={() => changeQty(item.productId, 1)} className="rounded-md border border-surface-border p-1 text-ink-muted hover:bg-surface-muted cursor-pointer">
-                    <Plus size={14} />
+              <div key={item.productId} className="border-b border-surface-border py-2.5 last:border-0">
+                <div className="flex items-center gap-2">
+                  <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{item.name}</p>
+                  <button onClick={() => removeItem(item.productId)} className="rounded-md p-1.5 text-ink-soft hover:bg-danger-bg hover:text-danger cursor-pointer" title={t('pos.remove')}>
+                    <Trash2 size={15} />
                   </button>
                 </div>
-                <button onClick={() => removeItem(item.productId)} className="rounded-md p-1.5 text-ink-soft hover:bg-danger-bg hover:text-danger cursor-pointer" title={t('pos.remove')}>
-                  <Trash2 size={15} />
-                </button>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-ink-soft">{settings.currencySymbol}</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.price}
+                      onChange={(e) => changePrice(item.productId, e.target.value)}
+                      className="!min-h-0 w-20 !px-2 !py-1.5 text-sm"
+                      title={t('pos.unitPrice')}
+                    />
+                  </div>
+                  <div className="ms-auto flex items-center gap-1">
+                    <button onClick={() => changeQty(item.productId, -1)} className="rounded-md border border-surface-border p-1 text-ink-muted hover:bg-surface-muted cursor-pointer">
+                      <Minus size={14} />
+                    </button>
+                    <span className="w-6 text-center text-sm">{item.qty}</span>
+                    <button onClick={() => changeQty(item.productId, 1)} className="rounded-md border border-surface-border p-1 text-ink-muted hover:bg-surface-muted cursor-pointer">
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                  <span className="w-20 shrink-0 text-end text-sm font-medium text-ink">{formatMoney(item.price * item.qty, settings.currencySymbol)}</span>
+                </div>
               </div>
             ))
           )}

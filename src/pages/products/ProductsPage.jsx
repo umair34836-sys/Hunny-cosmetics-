@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Plus, Search, PackagePlus, SlidersHorizontal, Pencil, Trash2, Package } from 'lucide-react'
+import { Plus, Search, PackagePlus, SlidersHorizontal, Pencil, Trash2, Package, Upload } from 'lucide-react'
 import { useLanguage } from '../../i18n/LanguageContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useSettings } from '../../contexts/SettingsContext'
@@ -13,6 +13,7 @@ import { Input } from '../../components/ui/Field'
 import EmptyState from '../../components/ui/EmptyState'
 import { FullPageSpinner } from '../../components/ui/Spinner'
 import { ProductFormModal, StockInModal, AdjustStockModal } from './ProductModals'
+import BulkImportModal from './BulkImportModal'
 
 function stockBadge(product, t) {
   if (product.quantity <= 0) return <Badge tone="danger">{t('products.outOfStock')}</Badge>
@@ -41,6 +42,7 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null)
   const [stockInProduct, setStockInProduct] = useState(null)
   const [adjustProduct, setAdjustProduct] = useState(null)
+  const [importOpen, setImportOpen] = useState(false)
 
   useEffect(() => {
     const unsub = listenProducts(setProducts, () => toast.error(t('common.errorGeneric')))
@@ -81,15 +83,21 @@ export default function ProductsPage() {
           <p className="text-sm text-ink-muted">{t('products.subtitle')}</p>
         </div>
         {isAdmin && (
-          <Button
-            onClick={() => {
-              setEditingProduct(null)
-              setFormOpen(true)
-            }}
-          >
-            <Plus size={18} />
-            {t('products.add')}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setImportOpen(true)}>
+              <Upload size={18} />
+              {t('products.bulkImport')}
+            </Button>
+            <Button
+              onClick={() => {
+                setEditingProduct(null)
+                setFormOpen(true)
+              }}
+            >
+              <Plus size={18} />
+              {t('products.add')}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -181,6 +189,7 @@ export default function ProductsPage() {
       <ProductFormModal open={formOpen} onClose={() => setFormOpen(false)} product={editingProduct} />
       <StockInModal open={!!stockInProduct} onClose={() => setStockInProduct(null)} product={stockInProduct} />
       <AdjustStockModal open={!!adjustProduct} onClose={() => setAdjustProduct(null)} product={adjustProduct} />
+      <BulkImportModal open={importOpen} onClose={() => setImportOpen(false)} />
     </div>
   )
 }
