@@ -6,6 +6,8 @@ import {
   deleteDoc,
   onSnapshot,
   query,
+  where,
+  getDocs,
   orderBy,
   serverTimestamp,
   runTransaction,
@@ -55,6 +57,23 @@ export async function updateProduct(id, data) {
 
 export async function deleteProduct(id) {
   return deleteDoc(doc(db, 'products', id))
+}
+
+/**
+ * Updates ONLY cost/selling price on an existing product matched by exact
+ * name — never touches quantity. Used by the "Update Prices" bulk mode so
+ * re-uploading a supplier list to fix pricing doesn't double-count stock.
+ * Returns 'updated' or 'not_found'.
+ */
+export async function updateProductPricingByName({ name, costPrice, sellingPrice }) {
+  const q = query(productsCol, where('name', '==', name))
+  const snap = await getDocs(q)
+  if (snap.empty) return 'not_found'
+  const payload = { updatedAt: serverTimestamp() }
+  if (costPrice != null) payload.costPrice = Number(costPrice) || 0
+  if (sellingPrice != null) payload.sellingPrice = Number(sellingPrice) || 0
+  await updateDoc(snap.docs[0].ref, payload)
+  return 'updated'
 }
 
 /**

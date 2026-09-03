@@ -123,6 +123,13 @@ export const translations = {
   'products.orPasteBelow': { en: 'or paste rows below', ur: 'یا نیچے پیسٹ کریں' },
   'products.readyToImport': { en: '{n} product(s) ready to import', ur: '{n} پروڈکٹس شامل کرنے کے لیے تیار' },
   'products.importAll': { en: 'Import {n}', ur: '{n} شامل کریں' },
+  'products.modeCreate': { en: 'Add New Products', ur: 'نئی پروڈکٹس شامل کریں' },
+  'products.modeUpdatePrices': { en: 'Update Prices', ur: 'قیمتیں اپڈیٹ کریں' },
+  'products.updatePricesHelp': {
+    en: 'Paste or upload a CSV to update cost/selling price on products you already have — matched by exact name. Quantity is never touched. Columns: name, costPrice, sellingPrice.',
+    ur: 'پہلے سے موجود پروڈکٹس کی خرید/فروخت قیمت اپڈیٹ کرنے کے لیے CSV پیسٹ یا اپلوڈ کریں — نام سے میچ ہوگا۔ مقدار تبدیل نہیں ہوگی۔ کالمز: name, costPrice, sellingPrice۔',
+  },
+  'products.updateAll': { en: 'Update {n}', ur: '{n} اپڈیٹ کریں' },
 
   // ---- POS ----
   'pos.title': { en: 'New Sale', ur: 'نئی سیل' },
