@@ -26,6 +26,9 @@ and syncs when you're back online).
   inventory, no cost prices, no settings/reports).
 - **Bilingual** — English / Urdu toggle (Urdu renders right-to-left with
   Noto Nastaliq Urdu).
+- **Mobile-ready & installable** — responsive down to phone widths (card
+  layouts replace tables on small screens), and installable as an app on
+  Android, iOS, and desktop (see "Install as an app" below).
 
 ## Tech stack
 
@@ -107,6 +110,26 @@ from the domain root, and `hunny-cosmetics.web.app`/`.firebaseapp.com` are
 already in Firebase's authorized domains by default, so no extra Auth step
 is needed for this path.
 
+## Install as an app (Android / iPhone / desktop)
+
+The site is a PWA (Progressive Web App) — no app-store listing needed, and
+it updates itself automatically whenever the site is redeployed:
+
+- **Android (Chrome)**: open the site → menu (⋮) → **Install app** (or
+  **Add to Home screen**). It appears as a normal app icon and opens full-
+  screen, no browser bar.
+- **iPhone/iPad (Safari)**: open the site → Share button → **Add to Home
+  Screen**. (Must be Safari — Chrome/Firefox on iOS can't install PWAs;
+  that's an iOS platform restriction, not something this app controls.)
+- **Desktop (Chrome/Edge)**: an install icon (⊕) appears in the address
+  bar — click it, or menu → **Install Hunny Cosmetics**.
+
+Once installed it keeps working with a patchy connection: Firestore's
+persistent local cache (enabled in `src/firebase.js`) lets the app read
+recent data and queue sales/stock changes offline, syncing automatically
+once back online — genuinely useful for a shop with unreliable wifi/data,
+not just a nicety.
+
 ## Data model (Firestore)
 
 | Collection | Purpose |
@@ -121,10 +144,9 @@ is needed for this path.
 
 ## Notes & things worth knowing
 
-- Firestore's built-in offline persistence means the app keeps working (read
-  and write) if the shop's internet drops — changes sync once you're back
-  online. It is not a fully offline-first / no-internet-ever app; the very
-  first login on a device needs connectivity.
+- It's not a fully offline-first / no-internet-ever app — the very first
+  login on a device needs connectivity (see "Install as an app" above for
+  how it behaves offline after that).
 - `src/firebase.js` contains the Firebase project's public web config —
   that's normal and safe to ship in the client bundle (these are
   identifiers, not secrets); access is enforced entirely by

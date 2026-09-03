@@ -75,7 +75,37 @@ export default function SalesPage() {
         {filtered.length === 0 ? (
           <EmptyState icon={ReceiptIcon} title={t(sales.length ? 'common.noResults' : 'sales.noSales')} />
         ) : (
-          <div className="overflow-x-auto scrollbar-thin">
+          <>
+            {/* Mobile: stacked cards */}
+            <div className="divide-y divide-surface-border sm:hidden">
+              {filtered.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setActiveSale(s)}
+                  className="flex w-full flex-col items-start gap-1.5 p-4 text-start cursor-pointer hover:bg-surface-muted/40"
+                >
+                  <div className="flex w-full items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-ink">{s.invoiceNo}</p>
+                      <p className="text-xs text-ink-soft">{s.customerName || t('sales.cashier') + ': ' + s.cashierName}</p>
+                    </div>
+                    <Badge tone={s.status === 'refunded' ? 'danger' : 'success'}>
+                      {s.status === 'refunded' ? t('sales.refunded') : t('sales.completed')}
+                    </Badge>
+                  </div>
+                  <div className="flex w-full items-center justify-between text-sm">
+                    <span className="text-ink-soft">{formatDateTime(s.createdAt, lang)}</span>
+                    <span className="font-semibold text-ink">{formatMoney(s.total, settings.currencySymbol)}</span>
+                  </div>
+                  {isAdmin && s.status !== 'refunded' && (
+                    <span className="text-xs text-success">{t('reports.profit')}: {formatMoney(computeSaleProfit(s), settings.currencySymbol)}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop/tablet: full table */}
+            <div className="hidden overflow-x-auto scrollbar-thin sm:block">
             <table className="w-full min-w-[760px] text-start text-sm">
               <thead className="border-b border-surface-border bg-surface-muted/60 text-xs uppercase tracking-wide text-ink-soft">
                 <tr>
@@ -135,7 +165,8 @@ export default function SalesPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </Card>
 

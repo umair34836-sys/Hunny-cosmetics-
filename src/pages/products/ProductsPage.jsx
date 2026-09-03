@@ -110,7 +110,69 @@ export default function ProductsPage() {
         {filtered.length === 0 ? (
           <EmptyState icon={Package} title={t(products.length ? 'common.noResults' : 'products.noProducts')} />
         ) : (
-          <div className="overflow-x-auto scrollbar-thin">
+          <>
+            {/* Mobile: stacked cards — a wide data table doesn't fit a phone screen */}
+            <div className="divide-y divide-surface-border sm:hidden">
+              {filtered.map((p) => (
+                <div key={p.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium text-ink">{p.name}</p>
+                      <p className="text-xs text-ink-soft">
+                        {[p.brand, p.sku, p.category].filter(Boolean).join(' · ') || '—'}
+                      </p>
+                      {p.expiryDate && <p className="text-xs text-ink-soft">{t('products.expiryDate')}: {formatDate(p.expiryDate)}</p>}
+                    </div>
+                    <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
+                      {stockBadge(p, t)}
+                      {expiryBadge(p, t)}
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-4 text-sm">
+                    <span className="text-ink">{p.quantity} {p.unit}</span>
+                    {isAdmin && <span className="text-ink-muted">{formatMoney(p.costPrice, settings.currencySymbol)}</span>}
+                  </div>
+                  {isAdmin && (
+                    <div className="mt-3 grid grid-cols-4 gap-1 border-t border-surface-border pt-3">
+                      <button
+                        onClick={() => setStockInProduct(p)}
+                        className="flex flex-col items-center gap-1 rounded-lg py-2 text-xs text-ink-muted hover:bg-success-bg hover:text-success cursor-pointer"
+                      >
+                        <PackagePlus size={18} />
+                        {t('products.stockIn')}
+                      </button>
+                      <button
+                        onClick={() => setAdjustProduct(p)}
+                        className="flex flex-col items-center gap-1 rounded-lg py-2 text-xs text-ink-muted hover:bg-warning-bg hover:text-warning cursor-pointer"
+                      >
+                        <SlidersHorizontal size={18} />
+                        {t('products.adjust')}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingProduct(p)
+                          setFormOpen(true)
+                        }}
+                        className="flex flex-col items-center gap-1 rounded-lg py-2 text-xs text-ink-muted hover:bg-surface-muted hover:text-ink cursor-pointer"
+                      >
+                        <Pencil size={18} />
+                        {t('common.edit')}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p)}
+                        className="flex flex-col items-center gap-1 rounded-lg py-2 text-xs text-ink-muted hover:bg-danger-bg hover:text-danger cursor-pointer"
+                      >
+                        <Trash2 size={18} />
+                        {t('common.delete')}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop/tablet: full table */}
+            <div className="hidden overflow-x-auto scrollbar-thin sm:block">
             <table className="w-full min-w-[860px] text-start text-sm">
               <thead className="border-b border-surface-border bg-surface-muted/60 text-xs uppercase tracking-wide text-ink-soft">
                 <tr>
@@ -180,7 +242,8 @@ export default function ProductsPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </Card>
 

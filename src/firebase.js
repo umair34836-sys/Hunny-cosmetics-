@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore'
 
 // Hunny Cosmetics — Firebase project config.
 // Safe to keep in the client bundle: these are public identifiers, not
@@ -17,7 +17,17 @@ export const firebaseConfig = {
 
 export const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 export const auth = getAuth(app)
-export const db = getFirestore(app)
+
+// Persistent local cache (IndexedDB) — lets the shop keep browsing
+// inventory, ringing up sales, and reading recent data while offline
+// (patchy shop wifi/mobile data); writes queue locally and sync once back
+// online. Multi-tab manager so having the app open in two tabs/windows
+// doesn't fight over the same cache. Falls back to Firestore's in-memory
+// cache (still works, just doesn't survive a reload) if the browser
+// doesn't support it — e.g. Safari private browsing.
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+})
 
 // A second, isolated Firebase app instance used ONLY when an admin creates
 // a new staff account. Firebase Auth's createUserWithEmailAndPassword signs
